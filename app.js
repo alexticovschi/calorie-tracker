@@ -30,6 +30,31 @@ const StorageCtrl = (function(){
                 items = JSON.parse(localStorage.getItem('items'));
             }
             return items;
+        },
+        updateItemStorage: function(updatedItem){
+            let items = JSON.parse(localStorage.getItem('items'));
+
+            items.forEach((item, index) => {
+                if(updatedItem.id === item.id){
+                    items.splice(index, 1, updatedItem); // remove the item and replace it with updatedItem
+                }
+            });
+            // Re set local storage
+            localStorage.setItem('items', JSON.stringify(items));
+        },
+        deleteItemFromLocalStorage: function(itemId){
+            let items = JSON.parse(localStorage.getItem('items'));
+
+            items.forEach((item, index) => {
+                if(itemId === item.id){
+                    items.splice(index, 1); // remove the item from local storage
+                }
+            });
+            // Re set local storage
+            localStorage.setItem('items', JSON.stringify(items));
+        },
+        clearItemsFromLocalStorage: function(){
+            localStorage.removeItem('items');
         }
     }
 })();
@@ -375,6 +400,9 @@ const App = (function(ItemCtrl, StorageCtrl, UICtrl) {
         // Add total calories to UI
         UICtrl.showTotalCalories(totalCalories);
 
+        // Update local storage
+        StorageCtrl.updateItemStorage(updatedItem);
+
         UICtrl.clearEditState();
     }
 
@@ -397,6 +425,9 @@ const App = (function(ItemCtrl, StorageCtrl, UICtrl) {
         // Add total calories to UI
         UICtrl.showTotalCalories(totalCalories);
 
+        // Delete from local storage
+        StorageCtrl.deleteItemFromLocalStorage(currentItem.id);
+
         UICtrl.clearEditState();
     }
 
@@ -415,6 +446,9 @@ const App = (function(ItemCtrl, StorageCtrl, UICtrl) {
 
         // Remove from UI
         UICtrl.removeItems();
+
+        // Clear/remove items from local storage
+        StorageCtrl.clearItemsFromLocalStorage();
 
         // Hide the ul
         UICtrl.hideList();
